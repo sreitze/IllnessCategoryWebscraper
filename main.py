@@ -89,4 +89,7 @@ def translate(category):
 if __name__ == "__main__":
   categories = find_categories()
   sub_categories = find_sub_categories(categories[0])
-  print(find_active_principles(categories[0], sub_categories[4]))
+  find_active_principles(categories[0], sub_categories[4])
+
+  # The idea is to loop through all the categories and it's sub-categories to get each active principle
+  # and connect it to its general category through a csv or JSON file
