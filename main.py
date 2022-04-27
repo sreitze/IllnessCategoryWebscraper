@@ -47,10 +47,36 @@ def find_sub_categories(category):
 
   category = translate(category)
   sub_categories = []
-  r1 = requests.get(f'https://reference.medscape.com/drug/{category}')
+  r1 = requests.get(f'https://reference.medscape.com/drugs/{category}')
   soup = BeautifulSoup(r1.text, 'html.parser')
 
-  print(soup.find)
+  list = soup.find('div', {'id': 'drugdbmain2'}).ul.findAll('li')
+
+  for sub_category in list:
+    sub_category_name = sub_category.a.get_text()
+    sub_categories.append(sub_category_name)
+  
+  return sub_categories
+
+def find_active_principles(category, sub_category):
+  
+  active_principles = []
+  category = translate(category)
+  r1 = requests.get(f'https://reference.medscape.com/drugs/{category}')
+  soup = BeautifulSoup(r1.text, 'html.parser')
+
+  link = soup.find('div', {'id': 'drugdbmain2'}).ul.find('li', string=sub_category).a.get('href')
+
+  r2 = requests.get(link)
+  soup2 = BeautifulSoup(r2.text, 'html.parser')
+  list = soup2.find('div', {'id': 'drugdbmain2'}).ul.findAll('li')
+  for l in list:
+    r = requests.get(l.a.get('href'))
+    s = BeautifulSoup(r.text, 'html.parser')
+    active_principle = s.find('div', {'id': 'maincolboxdrugdbheader'}).h1.span.get_text()
+    active_principles.append(active_principle)
+
+  return active_principles
 
 def translate(category):
   if '&' in category:
@@ -62,3 +88,5 @@ def translate(category):
 
 if __name__ == "__main__":
   categories = find_categories()
+  sub_categories = find_sub_categories(categories[0])
+  print(find_active_principles(categories[0], sub_categories[4]))
