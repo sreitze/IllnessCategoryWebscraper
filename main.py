@@ -43,7 +43,22 @@ def find_categories():
   
   return categories
 
+def find_sub_categories(category):
+
+  category = translate(category)
+  sub_categories = []
+  r1 = requests.get(f'https://reference.medscape.com/drug/{category}')
+  soup = BeautifulSoup(r1.text, 'html.parser')
+
+  print(soup.find)
+
+def translate(category):
+  if '&' in category:
+    category = category.split(' & ')
+    category = '-'.join(category).replace(' ', '-')
+  elif ' ' in category:
+    category = category.replace(' ', '-')
+  return category.replace("'", "").lower()
+
 if __name__ == "__main__":
   categories = find_categories()
-  for category in categories:
-    print(category)
