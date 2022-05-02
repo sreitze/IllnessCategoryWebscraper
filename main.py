@@ -1,10 +1,9 @@
-import json
-import time
 from crypt import methods
 from unicodedata import category
 from flask import Flask, request
 import requests
 from bs4 import BeautifulSoup
+import csv
 
 app = Flask(__name__)
 
@@ -58,23 +57,25 @@ def find_sub_categories(category):
   
   return sub_categories
 
-def find_active_principles(category, sub_category):
+def find_active_principles(category_raw, sub_category):
   
   active_principles = []
-  category = translate(category)
+  category = translate(category_raw)
+
   r1 = requests.get(f'https://reference.medscape.com/drugs/{category}')
   soup = BeautifulSoup(r1.text, 'html.parser')
 
   link = soup.find('div', {'id': 'drugdbmain2'}).ul.find('li', string=sub_category).a.get('href')
-
   r2 = requests.get(link)
   soup2 = BeautifulSoup(r2.text, 'html.parser')
   list = soup2.find('div', {'id': 'drugdbmain2'}).ul.findAll('li')
+
   for l in list:
-    r = requests.get(l.a.get('href'))
+    link = l.a.get('href')
+    r = requests.get(link)
     s = BeautifulSoup(r.text, 'html.parser')
     active_principle = s.find('div', {'id': 'maincolboxdrugdbheader'}).h1.span.get_text()
-    active_principles.append(active_principle)
+    active_principles.append([str(active_principle), category_raw])
 
   return active_principles
 
@@ -89,7 +90,17 @@ def translate(category):
 if __name__ == "__main__":
   categories = find_categories()
   sub_categories = find_sub_categories(categories[0])
-  find_active_principles(categories[0], sub_categories[4])
+  print(sub_categories[0])
+  active_principles = find_active_principles(categories[0], sub_categories[0])
+
+  with open('active_principles.csv', 'w') as f:
+    # create the csv writer
+    writer = csv.writer(f)
+
+    # write a row to the csv file
+    writer.writerow(['name', 'category'])
+    writer.writerows(active_principles)
+
 
   # The idea is to loop through all the categories and it's sub-categories to get each active principle
   # and connect it to its general category through a csv or JSON file
