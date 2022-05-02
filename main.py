@@ -1,5 +1,4 @@
 from crypt import methods
-from unicodedata import category
 from flask import Flask, request
 import requests
 from bs4 import BeautifulSoup
@@ -74,8 +73,10 @@ def find_active_principles(category_raw, sub_category):
     link = l.a.get('href')
     r = requests.get(link)
     s = BeautifulSoup(r.text, 'html.parser')
-    active_principle = s.find('div', {'id': 'maincolboxdrugdbheader'}).h1.span.get_text()
-    active_principles.append([str(active_principle), category_raw])
+    box = s.find('div', {'id': "maincolboxdrugdbheader"})
+    if box is not None:
+      active_principle = box.h1.find('span', {'class': 'drug_section_link'}).get_text()
+      active_principles.append([str(active_principle), category_raw])
 
   return active_principles
 
@@ -88,9 +89,14 @@ def translate(category):
   return category.replace("'", "").lower()
 
 if __name__ == "__main__":
+  active_principles = []
   categories = find_categories()
   sub_categories = find_sub_categories(categories[0])
   active_principles = find_active_principles(categories[0], sub_categories[0])
+  for category in categories:
+    sub_categories = find_sub_categories(category)
+    for sub_category in sub_categories:
+      active_principles.append(find_active_principles(category, sub_category))
 
   with open('active_principles.csv', 'w') as f:
     # create the csv writer
