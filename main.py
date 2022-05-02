@@ -100,6 +100,5 @@ if __name__ == "__main__":
     writer.writerow(['name', 'category'])
     writer.writerows(active_principles)
 
-
   # The idea is to loop through all the categories and it's sub-categories to get each active principle
   # and connect it to its general category through a csv or JSON file
