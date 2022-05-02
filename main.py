@@ -90,7 +90,6 @@ def translate(category):
 if __name__ == "__main__":
   categories = find_categories()
   sub_categories = find_sub_categories(categories[0])
-  print(sub_categories[0])
   active_principles = find_active_principles(categories[0], sub_categories[0])
 
   with open('active_principles.csv', 'w') as f:
