@@ -75,7 +75,7 @@ def find_active_principles(category_raw, sub_category):
     s = BeautifulSoup(r.text, 'html.parser')
     box = s.find('div', {'id': "maincolboxdrugdbheader"})
     if box is not None:
-      active_principle = box.h1.find('span', {'class': 'drug_section_link'}).get_text()
+      active_principle = box.h1.find('span', {'class': 'drug_suffix'}).previousSibling.get_text()
       active_principles.append([str(active_principle), category_raw])
 
   return active_principles
@@ -92,13 +92,13 @@ if __name__ == "__main__":
   active_principles = []
   categories = find_categories()
   sub_categories = find_sub_categories(categories[0])
-  active_principles = find_active_principles(categories[0], sub_categories[0])
-  for category in categories:
-    sub_categories = find_sub_categories(category)
-    for sub_category in sub_categories:
-      active_principles.append(find_active_principles(category, sub_category))
+  active_principles = find_active_principles(categories[0], sub_categories[2])
+  # for category in categories:
+  #   sub_categories = find_sub_categories(category)
+  #   for sub_category in sub_categories:
+  #     active_principles.append(find_active_principles(category, sub_category))
 
-  with open('active_principles.csv', 'w') as f:
+  with open('active_principles.csv', 'a') as f:
     # create the csv writer
     writer = csv.writer(f)
 
