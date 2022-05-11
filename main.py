@@ -67,16 +67,23 @@ def find_active_principles(category_raw, sub_category):
   link = soup.find('div', {'id': 'drugdbmain2'}).ul.find('li', string=sub_category).a.get('href')
   r2 = requests.get(link)
   soup2 = BeautifulSoup(r2.text, 'html.parser')
-  list = soup2.find('div', {'id': 'drugdbmain2'}).ul.findAll('li')
+  box = soup2.find('div', {'id': 'drugdbmain2'})
+  if box is not None:
+    list_sub_categories = box.ul.findAll('li')
 
-  for l in list:
-    link = l.a.get('href')
-    r = requests.get(link)
-    s = BeautifulSoup(r.text, 'html.parser')
-    box = s.find('div', {'id': "maincolboxdrugdbheader"})
+    for l in list_sub_categories:
+      link = l.a.get('href')
+      r = requests.get(link)
+      s = BeautifulSoup(r.text, 'html.parser')
+      box = s.find('div', {'id': "maincolboxdrugdbheader"})
+      if box is not None:
+        active_principle = box.h1.find('span', {'class': 'drug_suffix'}).previousSibling.get_text()
+        active_principles.append([active_principle, category_raw])
+  else:
+    box = soup2.find('div', {'id': "maincolboxdrugdbheader"})
     if box is not None:
       active_principle = box.h1.find('span', {'class': 'drug_suffix'}).previousSibling.get_text()
-      active_principles.append([str(active_principle), category_raw])
+      active_principles.append([active_principle, category_raw])
 
   return active_principles
 
@@ -91,14 +98,14 @@ def translate(category):
 if __name__ == "__main__":
   active_principles = []
   categories = find_categories()
-  sub_categories = find_sub_categories(categories[0])
-  active_principles = find_active_principles(categories[0], sub_categories[2])
-  # for category in categories:
-  #   sub_categories = find_sub_categories(category)
-  #   for sub_category in sub_categories:
-  #     active_principles.append(find_active_principles(category, sub_category))
+  # sub_categories = find_sub_categories(categories[4])
+  # active_principles = find_active_principles(categories[4], sub_categories[1])
+  for category in categories:
+    sub_categories = find_sub_categories(category)
+    for sub_category in sub_categories:
+      active_principles.append(find_active_principles(category, sub_category))
 
-  with open('active_principles.csv', 'a') as f:
+  with open('active_principles.csv', 'w') as f:
     # create the csv writer
     writer = csv.writer(f)
 
