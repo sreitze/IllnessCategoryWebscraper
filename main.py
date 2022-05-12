@@ -73,16 +73,17 @@ def find_active_principles(category_raw, sub_category):
 
     for l in list_sub_categories:
       link = l.a.get('href')
-      r = requests.get(link)
-      s = BeautifulSoup(r.text, 'html.parser')
-      box = s.find('div', {'id': "maincolboxdrugdbheader"})
-      if box is not None:
-        active_principle = box.h1.find('span', {'class': 'drug_suffix'}).previousSibling.get_text()
-        active_principles.append([active_principle, category_raw])
+      bad_name = link.split('/')[4]
+      active_principle = eliminate_nums(bad_name)
+      new_category = soup2.find('div', {'id': 'byclassbc'}).find_all('a')[1].get_text()
+      active_principles.append([active_principle, new_category])
   else:
-    box = soup2.find('div', {'id': "maincolboxdrugdbheader"})
-    if box is not None:
-      active_principle = box.h1.find('span', {'class': 'drug_suffix'}).previousSibling.get_text()
+    box = soup.find('div', {'id': 'drugdbmain2'})
+    list_active_principles = box.ul.findAll('li')
+    for l in list_active_principles:
+      link = l.a.get('href')
+      bad_name = link.split('/')[4]
+      active_principle = eliminate_nums(bad_name)
       active_principles.append([active_principle, category_raw])
 
   return active_principles
@@ -95,11 +96,17 @@ def translate(category):
     category = category.replace(' ', '-')
   return category.replace("'", "").lower()
 
+def eliminate_nums(name):
+  # name = name.split('-')
+  name = name.split('-')[:-1]
+  name = ' '.join(name)
+  return name
+
 if __name__ == "__main__":
   active_principles = []
   categories = find_categories()
-  # sub_categories = find_sub_categories(categories[4])
-  # active_principles = find_active_principles(categories[4], sub_categories[1])
+  # sub_categories = find_sub_categories(categories[0])
+  # active_principles = find_active_principles(categories[0], sub_categories[0])
   for category in categories:
     sub_categories = find_sub_categories(category)
     for sub_category in sub_categories:
