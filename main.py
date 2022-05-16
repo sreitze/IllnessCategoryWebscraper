@@ -1,31 +1,7 @@
 from crypt import methods
-from flask import Flask, request
 import requests
 from bs4 import BeautifulSoup
-import csv
-
-app = Flask(__name__)
-
-def find_class(name):
-
-    r1 = requests.get(f'https://reference.medscape.com/drug/{name}')
-    soup = BeautifulSoup(r1.text, 'html.parser')
-
-    brand_name = soup.find('span', {'class': 'drugbrandname'}).find('span').next_sibling
-
-    sub_category = soup.find('div', {'id': 'maincolboxdrugdbheader'}).ul.li.a.get_text()
-    sub_category = sub_category.replace(' ', '-').lower()
-
-    r2 = requests.get(f'https://reference.medscape.com/drugs/{sub_category}')
-    soup2 = BeautifulSoup(r2.text, 'html.parser')
-
-    main_category = soup2.find('div', {'id': 'byclassbc'}).find_all('a')[1].get_text()
-
-    response = {}
-
-    response['data'] = {'name': brand_name, 'class': main_category}
-
-    return response
+import json
 
 def find_categories():
 
@@ -56,9 +32,8 @@ def find_sub_categories(category):
   
   return sub_categories
 
-def find_active_principles(category_raw, sub_category):
-  
-  active_principles = []
+def find_active_principles(category_raw, sub_category, active_principles):
+
   category = translate(category_raw)
 
   r1 = requests.get(f'https://reference.medscape.com/drugs/{category}')
@@ -78,12 +53,12 @@ def find_active_principles(category_raw, sub_category):
       box = s.find('div', {'id': "maincolboxdrugdbheader"})
       if box is not None:
         active_principle = box.h1.find('span', {'class': 'drug_suffix'}).previousSibling.get_text()
-        active_principles.append([active_principle, category_raw])
+        active_principles.append((active_principle, category_raw))
   else:
     box = soup2.find('div', {'id': "maincolboxdrugdbheader"})
     if box is not None:
       active_principle = box.h1.find('span', {'class': 'drug_suffix'}).previousSibling.get_text()
-      active_principles.append([active_principle, category_raw])
+      active_principles.append((active_principle, category_raw))
 
   return active_principles
 
@@ -98,20 +73,16 @@ def translate(category):
 if __name__ == "__main__":
   active_principles = []
   categories = find_categories()
-  # sub_categories = find_sub_categories(categories[4])
-  # active_principles = find_active_principles(categories[4], sub_categories[1])
-  for category in categories:
-    sub_categories = find_sub_categories(category)
-    for sub_category in sub_categories:
-      active_principles.append(find_active_principles(category, sub_category))
+  # sub_categories = find_sub_categories(categories[0])
+  # active_principles = find_active_principles(categories[0], sub_categories[0])
+  # for category in categories:
+  sub_categories = find_sub_categories(categories[0])
+  for sub_category in sub_categories:
+    active_principles = find_active_principles(categories[0], sub_category, active_principles)
+  dictionary = dict(active_principles)
 
-  with open('active_principles.csv', 'w') as f:
-    # create the csv writer
-    writer = csv.writer(f)
-
-    # write a row to the csv file
-    writer.writerow(['name', 'category'])
-    writer.writerows(active_principles)
+  with open('active_principles.json', 'w') as f:
+    json.dump(dictionary, f, indent=4)
 
   # The idea is to loop through all the categories and it's sub-categories to get each active principle
-  # and connect it to its general category through a csv or JSON file
+  # and connect it to its general category through a JSON file
