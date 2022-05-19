@@ -1,12 +1,8 @@
-from crypt import methods
 import requests
 from bs4 import BeautifulSoup
 from googletrans import Translator
 
 class Scraper:
-
-  def __init__(self):
-    self.translator = Translator()
 
   def translate(self, category):
     if '&' in category:
@@ -15,6 +11,19 @@ class Scraper:
     elif ' ' in category:
       category = category.replace(' ', '-')
     return category.replace("'", "").lower()
+  
+  def find_categories(self):
+    categories = []
+    r1 = requests.get('https://reference.medscape.com/drugs')
+    soup = BeautifulSoup(r1.text, 'html.parser')
+
+    list = soup.find('div', {'id': 'drugdbmain2'}).ul.findAll('li')
+
+    for category in list:
+      category_name = category.a.get_text()
+      categories.append(category_name)
+    
+    return categories
 
   def find_sub_categories(self, category):
 
@@ -35,8 +44,6 @@ class Scraper:
 
     category = self.translate(category_raw)
 
-    translated_category = self.translator.translate(category_raw, src='en', dest='es')
-
     r1 = requests.get(f'https://reference.medscape.com/drugs/{category}')
     soup = BeautifulSoup(r1.text, 'html.parser')
 
@@ -54,13 +61,11 @@ class Scraper:
         box = s.find('div', {'id': "maincolboxdrugdbheader"})
         if box is not None:
           active_principle = box.h1.find('span', {'class': 'drug_suffix'}).previousSibling.get_text()
-          translated_active_principle = self.translator.translate(active_principle, src='en', dest='es')
-          active_principles.append((translated_active_principle.text, translated_category.text))
+          active_principles.append((active_principle, category_raw))
     else:
       box = soup2.find('div', {'id': "maincolboxdrugdbheader"})
       if box is not None:
         active_principle = box.h1.find('span', {'class': 'drug_suffix'}).previousSibling.get_text()
-        translated_active_principle = self.translator.translate(active_principle, src='en', dest='es')
-        active_principles.append((translated_active_principle.text, translated_category.text))
+        active_principles.append((active_principle, category_raw))
 
     return active_principles
