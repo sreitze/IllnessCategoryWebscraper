@@ -64,13 +64,11 @@ class Scraper:
         box = s.find('div', {'id': "maincolboxdrugdbheader"})
         if box is not None:
           active_principle = box.h1.find('span', {'class': 'drug_suffix'}).previousSibling.get_text()
-          translated_ac = self.translator.translate(active_principle, src='en', dest='es')
-          active_principles.append((translated_ac.text, category_raw))
+          active_principles.append((active_principle, category_raw))
     else:
       box = soup2.find('div', {'id': "maincolboxdrugdbheader"})
       if box is not None:
         active_principle = box.h1.find('span', {'class': 'drug_suffix'}).previousSibling.get_text()
-        translated_ac = self.translator.translate(active_principle, src='en', dest='es')
-        active_principles.append((translated_ac.text, category_raw))
+        active_principles.append((active_principle, category_raw))
 
     return active_principles
