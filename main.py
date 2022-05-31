@@ -26,14 +26,14 @@ if __name__ == "__main__":
   #     active_principles = scraper.find_active_principles(category, sub_category, active_principles)
 
   sub_categories = scraper.find_sub_categories(categories[0])
-  active_principles = scraper.find_active_principles(categories[0], sub_categories[0], active_principles)
+  active_principles = scraper.find_active_principles(categories[0], categorias[0], sub_categories[0], active_principles)
   
   dictionary = dict(active_principles)
-  for key, value in dictionary.items():
-    for category in categories:
-      if value == category:
-        indice = categories.index(category)
-        dictionary[key] = categorias[indice]
+  # for key, value in dictionary.items():
+  #   for category in categories:
+  #     if value == category:
+  #       indice = categories.index(category)
+  #       dictionary[key] = categorias[indice]
 
   json_dict = json.dumps(dictionary, ensure_ascii=False, indent=4).encode('utf8')
 

@@ -43,7 +43,7 @@ class Scraper:
     
     return sub_categories
 
-  def find_active_principles(self, category_raw, sub_category, active_principles):
+  def find_active_principles(self, category_raw, category_es, sub_category, active_principles):
 
     category = self.translate(category_raw)
 
