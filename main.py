@@ -1,77 +1,9 @@
-from crypt import methods
-import requests
-from bs4 import BeautifulSoup
 import json
 from googletrans import Translator
-
-def find_categories():
-
-  categories = []
-  r1 = requests.get('https://reference.medscape.com/drugs')
-  soup = BeautifulSoup(r1.text, 'html.parser')
-
-  list = soup.find('div', {'id': 'drugdbmain2'}).ul.findAll('li')
-
-  for category in list:
-    category_name = category.a.get_text()
-    categories.append(category_name)
-  
-  return categories
-
-def find_sub_categories(category):
-
-  category = translate(category)
-  sub_categories = []
-  r1 = requests.get(f'https://reference.medscape.com/drugs/{category}')
-  soup = BeautifulSoup(r1.text, 'html.parser')
-
-  list = soup.find('div', {'id': 'drugdbmain2'}).ul.findAll('li')
-
-  for sub_category in list:
-    sub_category_name = sub_category.a.get_text()
-    sub_categories.append(sub_category_name)
-  
-  return sub_categories
-
-def find_active_principles(category_raw, sub_category, active_principles):
-
-  category = translate(category_raw)
-
-  r1 = requests.get(f'https://reference.medscape.com/drugs/{category}')
-  soup = BeautifulSoup(r1.text, 'html.parser')
-
-  link = soup.find('div', {'id': 'drugdbmain2'}).ul.find('li', string=sub_category).a.get('href')
-  r2 = requests.get(link)
-  soup2 = BeautifulSoup(r2.text, 'html.parser')
-  box = soup2.find('div', {'id': 'drugdbmain2'})
-  if box is not None:
-    list_sub_categories = box.ul.findAll('li')
-
-    for l in list_sub_categories:
-      link = l.a.get('href')
-      r = requests.get(link)
-      s = BeautifulSoup(r.text, 'html.parser')
-      box = s.find('div', {'id': "maincolboxdrugdbheader"})
-      if box is not None:
-        active_principle = box.h1.find('span', {'class': 'drug_suffix'}).previousSibling.get_text()
-        active_principles.append((active_principle, category_raw))
-  else:
-    box = soup2.find('div', {'id': "maincolboxdrugdbheader"})
-    if box is not None:
-      active_principle = box.h1.find('span', {'class': 'drug_suffix'}).previousSibling.get_text()
-      active_principles.append((active_principle, category_raw))
-
-  return active_principles
-
-def translate(category):
-  if '&' in category:
-    category = category.split(' & ')
-    category = '-'.join(category).replace(' ', '-')
-  elif ' ' in category:
-    category = category.replace(' ', '-')
-  return category.replace("'", "").lower()
+from scaper import Scraper
 
 if __name__ == "__main__":
+  scraper = Scraper()
   active_principles = []
   categories = ['Allergy & Cold', 'Anesthetics', 'Antidotes', 'Antimicrobials', 
                 'Blood Components', 'Cardiovascular', 'Critical Care', 'Dental & Oral Care', 
@@ -80,12 +12,23 @@ if __name__ == "__main__":
                 'Nutritionals', 'Oncology', 'Ophthalmics', 'Otics', 
                 'Pain Management', 'Psychiatrics', 'Pulmonary', 'Rheumatologics', 
                 'Urologics', 'Vaccinations', "Women's Health & Reproduction"]
-  # sub_categories = find_sub_categories(categories[0])
-  # active_principles = find_active_principles(categories[0], sub_categories[0], active_principles)
+  
+  categorias = ['Alergia y Resfrío', 'Anestésicos', 'Antídotos', 'Antimicrobianos',
+                'Componentes de la sangre', 'Cardiovascular', 'Cuidado crítico', 'Cuidado bucal y dental',
+                'Dermatológicos', 'Gastrointestinal', 'Hematológicos', 'Hierbas y Suplementos',
+                'Agentes de imagen', 'Inmunológicos', 'Metabólico y Endocrino', 'Neurológicos',
+                'Nutricionales', 'Oncología', 'Oftalmología', 'Óptica', 
+                'El manejo del dolor', 'Psiquiatría', 'Pulmonar', 'Reumatológicos',
+                'Urológicos', 'Vacunas', 'Salud y reproducción de la mujer']
+                
   for category in categories:
-    sub_categories = find_sub_categories(category)
+    sub_categories = scraper.find_sub_categories(category)
     for sub_category in sub_categories:
-      active_principles = find_active_principles(category, sub_category, active_principles)
+      active_principles = scraper.find_active_principles(category, 'hola', sub_category, active_principles)
+
+  # sub_categories = scraper.find_sub_categories(categories[0])
+  # active_principles = scraper.find_active_principles(categories[0], categorias[0], sub_categories[1], active_principles)
+  
   dictionary = dict(active_principles)
 
   with open('active_principles.json', 'w') as f:
