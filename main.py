@@ -1,4 +1,5 @@
 import json
+from googletrans import Translator
 from scaper import Scraper
 
 if __name__ == "__main__":
@@ -29,17 +30,9 @@ if __name__ == "__main__":
   # active_principles = scraper.find_active_principles(categories[0], categorias[0], sub_categories[1], active_principles)
   
   dictionary = dict(active_principles)
-  # for key, value in dictionary.items():
-  #   for category in categories:
-  #     if value == category:
-  #       indice = categories.index(category)
-  #       dictionary[key] = categorias[indice]
 
-  json_dict = json.dumps(dictionary, ensure_ascii=False, indent=4).encode('utf8')
-
-  with open('active_principles.json', 'w', encoding='utf8') as f:
-    # json.dump(dictionary, f, indent=4)
-    f.write(json_dict.decode())
+  with open('active_principles.json', 'w') as f:
+    json.dump(dictionary, f, indent=4)
 
   # The idea is to loop through all the categories and it's sub-categories to get each active principle
   # and connect it to its general category through a JSON file
