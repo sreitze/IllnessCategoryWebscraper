@@ -20,13 +20,13 @@ if __name__ == "__main__":
                 'El manejo del dolor', 'Psiquiatría', 'Pulmonar', 'Reumatológicos',
                 'Urológicos', 'Vacunas', 'Salud y reproducción de la mujer']
                 
-  # for category in categories:
-  #   sub_categories = scraper.find_sub_categories(category)
-  #   for sub_category in sub_categories:
-  #     active_principles = scraper.find_active_principles(category, sub_category, active_principles)
+  for category in categories:
+    sub_categories = scraper.find_sub_categories(category)
+    for sub_category in sub_categories:
+      active_principles = scraper.find_active_principles(category, 'hola', sub_category, active_principles)
 
-  sub_categories = scraper.find_sub_categories(categories[0])
-  active_principles = scraper.find_active_principles(categories[0], categorias[0], sub_categories[0], active_principles)
+  # sub_categories = scraper.find_sub_categories(categories[0])
+  # active_principles = scraper.find_active_principles(categories[0], categorias[0], sub_categories[1], active_principles)
   
   dictionary = dict(active_principles)
   # for key, value in dictionary.items():
