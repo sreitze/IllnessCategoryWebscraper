@@ -32,7 +32,7 @@ class Scraper:
     return sub_categories
 
   def find_active_principles(self, category_raw, category_es, sub_category, active_principles):
-
+    c = 0
     category = self.translate(category_raw)
 
     r1 = requests.get(f'https://reference.medscape.com/drugs/{category}')
@@ -54,7 +54,7 @@ class Scraper:
           active_principle = box.h1.find('span', {'class': 'drug_suffix'}).previousSibling.get_text()
           if active_principle is not None:
             translated = self.translator.translate(active_principle, src='en', dest='es')
-            print(active_principle, translated.text, category_es)
+            print(translated.text, category_es)
             active_principles.append((translated.text, category_es))
             time.sleep(2)
     else:
@@ -63,7 +63,7 @@ class Scraper:
         active_principle = box.h1.find('span', {'class': 'drug_suffix'}).previousSibling.get_text()
         if active_principle is not None:
           translated = self.translator.translate(active_principle, src='en', dest='es')
-          print(active_principle, translated.text, category_es)
+          print(translated.text, category_es)
           active_principles.append((translated.text, category_es))
           time.sleep(2)
 

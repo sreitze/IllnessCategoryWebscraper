@@ -28,8 +28,9 @@ if __name__ == "__main__":
       active_principles = scraper.find_active_principles(category, category_es, sub_category, active_principles)
       time.sleep(2)
 
-  # sub_categories = scraper.find_sub_categories(categories[0])
-  # active_principles = scraper.find_active_principles(categories[0], categorias[0], sub_categories[0], active_principles)
+  # sub_categories = scraper.find_sub_categories(categories[14])
+  # for sub_category in sub_categories:
+  #   active_principles = scraper.find_active_principles(categories[14], categorias[14], sub_category, active_principles)
   
   dictionary = dict(active_principles)
 
