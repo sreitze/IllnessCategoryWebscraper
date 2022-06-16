@@ -56,7 +56,7 @@ class Scraper:
             translated = self.translator.translate(active_principle, src='en', dest='es')
             print(translated.text, category_es)
             active_principles.append((translated.text, category_es))
-            time.sleep(2)
+            time.sleep(5)
     else:
       box = soup2.find('div', {'id': "maincolboxdrugdbheader"})
       if box is not None:
@@ -65,6 +65,6 @@ class Scraper:
           translated = self.translator.translate(active_principle, src='en', dest='es')
           print(translated.text, category_es)
           active_principles.append((translated.text, category_es))
-          time.sleep(2)
+          time.sleep(5)
 
     return active_principles
