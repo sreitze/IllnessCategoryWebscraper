@@ -1,4 +1,5 @@
 import requests
+import time
 from bs4 import BeautifulSoup
 from googletrans import Translator
 
@@ -14,19 +15,6 @@ class Scraper:
     elif ' ' in category:
       category = category.replace(' ', '-')
     return category.replace("'", "").lower()
-  
-  def find_categories(self):
-    categories = []
-    r1 = requests.get('https://reference.medscape.com/drugs')
-    soup = BeautifulSoup(r1.text, 'html.parser')
-
-    list = soup.find('div', {'id': 'drugdbmain2'}).ul.findAll('li')
-
-    for category in list:
-      category_name = category.a.get_text()
-      categories.append(category_name)
-    
-    return categories
 
   def find_sub_categories(self, category):
 
@@ -44,7 +32,7 @@ class Scraper:
     return sub_categories
 
   def find_active_principles(self, category_raw, category_es, sub_category, active_principles):
-
+    c = 0
     category = self.translate(category_raw)
 
     r1 = requests.get(f'https://reference.medscape.com/drugs/{category}')
@@ -64,13 +52,19 @@ class Scraper:
         box = s.find('div', {'id': "maincolboxdrugdbheader"})
         if box is not None:
           active_principle = box.h1.find('span', {'class': 'drug_suffix'}).previousSibling.get_text()
-          if '/' not in active_principle:
-            active_principles.append((active_principle, category_raw))
+          if active_principle is not None:
+            translated = self.translator.translate(active_principle, src='en', dest='es')
+            print(translated.text, category_es)
+            active_principles.append((translated.text, category_es))
+            time.sleep(5)
     else:
       box = soup2.find('div', {'id': "maincolboxdrugdbheader"})
       if box is not None:
         active_principle = box.h1.find('span', {'class': 'drug_suffix'}).previousSibling.get_text()
-        if '/' not in active_principle:
-            active_principles.append((active_principle, category_raw))
+        if active_principle is not None:
+          translated = self.translator.translate(active_principle, src='en', dest='es')
+          print(translated.text, category_es)
+          active_principles.append((translated.text, category_es))
+          time.sleep(5)
 
     return active_principles
