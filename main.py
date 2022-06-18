@@ -23,18 +23,22 @@ if __name__ == "__main__":
                 
   # PARA CORRER TODOS LOS PRINCIPIOS ACTIVOS, DESCOMENTAR
 
-  for category in categories:
-    sub_categories = scraper.find_sub_categories(category)
-    for sub_category in sub_categories:
-      category_es = categorias[categories.index(category)]
-      active_principles = scraper.find_active_principles(category, category_es, sub_category, active_principles)
-      time.sleep(10)
+  c = 0
+  while c < 25:
+    for category in categories[c:c+2]:
+      sub_categories = scraper.find_sub_categories(category)
+      for sub_category in sub_categories:
+        category_es = categorias[categories.index(category)]
+        active_principles = scraper.find_active_principles(category, category_es, sub_category, active_principles)
+      time.sleep(2)
+    c += 1
+    time.sleep(120)
 
   # PARA CORRER SOLO UNA CATEGORIA COMPLETA, DESCOMENTAR
 
-  # sub_categories = scraper.find_sub_categories(categories[4])
-  # for sub_category in sub_categories:
-  #   active_principles = scraper.find_active_principles(categories[4], categorias[4], sub_category, active_principles)
+  sub_categories = scraper.find_sub_categories(categories[26])
+  for sub_category in sub_categories:
+    active_principles = scraper.find_active_principles(categories[26], categorias[26], sub_category, active_principles)
 
   # PARA CORRER UNA SUB-CATEGORIA, DESCOMENTAR
 
