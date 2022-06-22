@@ -58,6 +58,7 @@ class Scraper:
                 checked.append(active_principle)
                 if translate:
                   translated = self.translator.translate(active_principle, src='en', dest='es')
+                  print(translated.text, category_es)
                   active_principles.append((translated.text, category_es))
                 else:
                   active_principles.append((active_principle, category_raw))
@@ -70,6 +71,7 @@ class Scraper:
               checked.append(active_principle)
               if translate:
                 translated = self.translator.translate(active_principle, src='en', dest='es')
+                print(translated.text, category_es)
                 active_principles.append((translated.text, category_es))
               else:
                 active_principles.append((active_principle, category_raw))
