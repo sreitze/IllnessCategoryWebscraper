@@ -31,7 +31,7 @@ class Scraper:
     
     return sub_categories
 
-  def find_active_principles(self, category_raw, category_es, sub_category, active_principles):
+  def find_active_principles(self, category_raw, category_es, sub_category, active_principles, checked, translate):
     category = self.translate(category_raw)
 
     r1 = requests.get(f'https://reference.medscape.com/drugs/{category}')
@@ -54,16 +54,24 @@ class Scraper:
           if box is not None:
             active_principle = box.h1.find('span', {'class': 'drug_suffix'}).previousSibling.get_text()
             if active_principle is not None:
-              translated = self.translator.translate(active_principle, src='en', dest='es')
-              print(translated.text, category_es)
-              active_principles.append((translated.text, category_es))
+              if active_principle not in checked:
+                checked.append(active_principle)
+                if translate:
+                  translated = self.translator.translate(active_principle, src='en', dest='es')
+                  active_principles.append((translated.text, category_es))
+                else:
+                  active_principles.append((active_principle, category_raw))
       else:
         box = soup2.find('div', {'id': "maincolboxdrugdbheader"})
         if box is not None:
           active_principle = box.h1.find('span', {'class': 'drug_suffix'}).previousSibling.get_text()
           if active_principle is not None:
-            translated = self.translator.translate(active_principle, src='en', dest='es')
-            print(translated.text, category_es)
-            active_principles.append((translated.text, category_es))
+            if active_principle not in checked:
+              checked.append(active_principle)
+              if translate:
+                translated = self.translator.translate(active_principle, src='en', dest='es')
+                active_principles.append((translated.text, category_es))
+              else:
+                active_principles.append((active_principle, category_raw))
 
-    return active_principles
+    return active_principles, checked
