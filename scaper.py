@@ -48,6 +48,7 @@ class Scraper:
 
         for l in list_sub_categories:
           link_active_principle = l.a.get('href')
+          time.sleep(1)
           r = requests.get(link_active_principle)
           s = BeautifulSoup(r.text, 'html.parser')
           box = s.find('div', {'id': "maincolboxdrugdbheader"})
@@ -61,7 +62,7 @@ class Scraper:
                   print(translated.text, category_es)
                   active_principles.append((translated.text, category_es))
                 else:
-                  active_principles.append((active_principle, category_raw))
+                  active_principles.append((active_principle, category_es))
       else:
         box = soup2.find('div', {'id': "maincolboxdrugdbheader"})
         if box is not None:
@@ -74,6 +75,6 @@ class Scraper:
                 print(translated.text, category_es)
                 active_principles.append((translated.text, category_es))
               else:
-                active_principles.append((active_principle, category_raw))
+                active_principles.append((active_principle, category_es))
 
-    return active_principles, checked
+    return active_principles

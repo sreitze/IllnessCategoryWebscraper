@@ -32,7 +32,7 @@ if __name__ == "__main__":
       for sub_category in sub_categories:
         checked = []
         category_es = categorias[categories.index(category)]
-        active_principles, checked = scraper.find_active_principles(category, category_es, sub_category, active_principles, checked, translate)
+        active_principles = scraper.find_active_principles(category, category_es, sub_category, active_principles, checked, translate)
       if translate:
         time.sleep(2)
     c += 1
@@ -44,7 +44,7 @@ if __name__ == "__main__":
   sub_categories = scraper.find_sub_categories(categories[26])
   for sub_category in sub_categories:
     checked = []
-    active_principles, checked = scraper.find_active_principles(categories[26], categorias[26], sub_category, active_principles, checked, translate)
+    active_principles = scraper.find_active_principles(categories[26], categorias[26], sub_category, active_principles, checked, translate)
 
   # PARA CORRER UNA SUB-CATEGORIA, DESCOMENTAR
 
