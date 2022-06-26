@@ -3,6 +3,7 @@ import time
 from scaper import Scraper
 
 if __name__ == "__main__":
+  start_time = time.time()
   scraper = Scraper()
   active_principles = []
   translate = True
@@ -58,6 +59,8 @@ if __name__ == "__main__":
   with open('active_principles.json', 'w', encoding='utf8') as f:
     # json.dump(dictionary, f, indent=4)
     f.write(json_dict.decode())
+  
+  print("--- %s seconds ---" % (time.time() - start_time))
 
   # The idea is to loop through all the categories and it's sub-categories to get each active principle
   # and connect it to its general category through a JSON file
